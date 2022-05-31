@@ -7,6 +7,8 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     CharacterController controller;
+    Raycast playerFire;
+
 
     [Header("Player Settings")]
     [Space(2)]
@@ -30,6 +32,7 @@ public class Player : MonoBehaviour
         try
         {
             controller = GetComponent<CharacterController>();
+            playerFire = GetComponent<Raycast>();
             controller.minMoveDistance = 0.0f;
             
             if (speed <= 0)
@@ -80,19 +83,19 @@ public class Player : MonoBehaviour
         {
             moveDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
 
-            moveDirection *= speed;
             moveDirection = transform.TransformDirection(moveDirection);
+            moveDirection *= speed;
 
             if (Input.GetButtonDown("Jump"))
                 moveDirection.y = jumpSpeed;
         }
-        else
-        {
-            moveDirection.x = Input.GetAxis("Horizontal") * speed;
-            moveDirection.z = Input.GetAxis("Vertical") * speed;
-        }
+        //else
+        //{
+        //    moveDirection.x = Input.GetAxis("Horizontal") * speed;
+        //    moveDirection.z = Input.GetAxis("Vertical") * speed;
+        //}
 
-        moveDirection.y -= gravity * Time.deltaTime;
+        moveDirection.y -= (gravity * Time.deltaTime);
         controller.Move(moveDirection * Time.deltaTime);
 
         if (Input.GetButtonDown("Fire1"))
@@ -102,6 +105,7 @@ public class Player : MonoBehaviour
     void Fire()
     {
         Debug.Log("pew pew pew");
+        playerFire.FireProjectile();
     }
 
     [ContextMenu("Reset Stats")]
@@ -115,6 +119,11 @@ public class Player : MonoBehaviour
         if (other.gameObject.tag == "FinishPoint")
         {
             Debug.Log("Game Ended");
+        }
+
+        if (other.gameObject.name == "Ghost")
+        {
+            Destroy(gameObject);
         }
     }
 }
